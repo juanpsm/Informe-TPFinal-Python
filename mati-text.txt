@@ -1,0 +1,38 @@
+-Juego enfocado a niños y niñas que cursan el primer ciclo educativo de nivel primario.
+
+-Juego educativo y divertido que los ayuda a desarrollar la atencion y concentracion, pero de una forma amena y divertida.
+
+-La sopa de letras consiste en una cuadricula rellena con diferentes letras y sin sentido aparente, el objetivo es descubrir un numero determinado de palabras escondidas enlazando estas letras en forma horizontal, vertical o diagonal.
+
+-Son validas palabras tanto de arriba a abajo, de abajo a arriba, de derecha a izquierda ó izquierda a derecha.
+
+-Las palabras aceptadas para la sopa de letras son las clasificadas como sustantivos, adjetivos y verbos.
+
+-Posibilidad de cambiar el aspecto de la interfaz al trabajar con sensores.
+
+-EL menu de configuraciones esta pensado para que sea ejecutado y manejado por un adulto.
+
+-El nivel de dificultad del juego es manejable a traves del menu de configuracion.
+
+-Las palabras se pueden agregar y clasificar en el menu de configuraciones.
+
+-Al marcar todas las letras correspondientes correctamente se mostrara automaticamente un mensaje de victoria que indicara que el fin del juego.
+
+-El juego es multiplataforma, haciendo las instalaciones correspondientes para la ejecucion funcionara en cualquier sistema Operativo.
+
+Objetivos de la sopa de letras:
+-Incrementar la habilidad en la observación e identificacion de cierto vocabulario estudiado o que sera estudiado segun la asignatura o materia de estudio.
+-Fomentar la diversion para mejorar el aprendizaje.
+
+ventajas:
+
+-favorecen el desarrollo de la memoria visual.
+-Crea una union entre la diversion y el aprendizaje.
+-Es un metodo de enseñanza extra clase.
+
+
+Desventajas:
+
+-Dependiendo de la configuracion realizada puede llegar a ser muy complejo y tedioso para los chicos.
+
+
