@@ -1,8 +1,8 @@
 \chapter{Introduction}
 
-Este trabajo se lleva a cabo en el marco de la asignatura Seminario de Lenguajes
-Como trabajo final para aplicar los conocimientos adquiridos durante la cursada, se implementa una aplicación didáctica orientada al desarrollo de capacidades de lecto-comprensión
-al mismo tiempo que permite un esparcimiento lúdico
+Este trabajo se lleva a cabo en el marco de la asignatura Seminario de Lenguajes: Opción Python.
+
+Como trabajo final para aplicar los conocimientos adquiridos durante la cursada, se implementa una aplicación didáctica orientada al desarrollo de capacidades de lecto-comprensión al mismo tiempo que permite un esparcimiento lúdico
 
 Lo que a continuación se presenta es la recopilación de las diferentes fases del proceso de desarrollo, indicando y explicando el lenguaje de programación y los módulos utilizados para tal fin.
 
@@ -21,21 +21,21 @@ Se basa en tkinter, por lo que no hay otras dependencias de paquetes.
 \input{pattern.tex}
 \section{Sobre el trabajo con sensores}
 
-Se usa la raspberry para medir temperatura y bla bla para detalles de como implementarlo detalladamente ver el~\autocite{anexoraspberry}
+Se utilizará una Raspberry Pi con sensores para medir temperatura y humedad de las aulas u oficinas de un establecimiento, datos que se guardan en un archivo que luego servirá para definir los colores de la interfaz del juego.
+También se implementará otra aplicación para mostar los datos ambientales en una matriz de led. Los detalles de la investigación y pruebas para implementarlo se encuentra en el apéndice~\ref{ap:rasp}
 
 \chapter{Implementación}
 
 Como primer paso pensamos que para poder implementar la aplicación de la sopa de letras sería conveniente tener, en principio un módulo que genere y maneje cierta \emph{grilla} o \emph{matriz} con las letras correspondientes, otro módulo que muestre en pantalla dichos datos y otro que le sirva al usuario para configurar los primeros.
-
+Para el primero que decidimos llamar \ctexttt{grilla.py} empezamos por leer distintas implementaciones de juegos similares. En Rosetta Code~\autocite{rosetta}, encontramos una solución para la \emph{busqueda de palabras}, que es parecido salvo porque en este caso las letras que sobran, es decir las que no pertenecen a ninguna palabra de las buscadas, deben formar un \emph{mensaje oculto}. A continuación se describe su funcionamiento y el de los modulos complementarios.
 
 \section{Grilla}\label{grilla}
-Para el primero que decidimos llamar \ctexttt{grilla.py} empezamos por leer distintas implementaciones de juegos similares. En Rosetta Code~\autocite{rosetta}, encontramos una solución para la \emph{busqueda de palabras}, que es parecido salvo porque en este caso las letras que sobran, es decir las que no pertenecen a ninguna palabra de las buscadas, deben formar un \emph{mensaje oculto}.
 
-En resumen como se puede interpretar en el código~\autocite{anexogrilla} se recibe una lista de palabras, para cada una elige aleatoriamente una posición en la grilla, y una dirección (de un conjunto de \emph{versores} posibles) y comprueba si cabe de esa manera. Para ello, para cada letra prueba que no se salga de los bordes de la grilla, y que la celda este: libre u ocupada con la misma letra que se esta probando. De no ser así ira ``avanzando'' en la grilla hasta haber probado todos los casilleros de la misma como celda de comienzo para cada palabra. Este proceso lo limitamos con un número de iteraciones máximo para que no entre en un bucle infinito en el caso que se de una situación imposible de resolver. En cada iteración se mezcla la lista de palabras para comenzar con una distinta.
+En resumen recibe una lista de palabras, para cada una elige aleatoriamente una posición en la grilla, y una dirección (de un conjunto de \emph{versores} posibles) y comprueba si cabe de esa manera. Para ello, para cada letra prueba que no se salga de los bordes de la grilla, y que la celda este: libre u ocupada con la misma letra que se esta probando. De no ser así ira ``avanzando'' en la grilla hasta haber probado todos los casilleros de la misma como celda de comienzo para cada palabra. Este proceso lo limitamos con un número de iteraciones máximo para que no entre en un bucle infinito en el caso que se de una situación imposible de resolver. En cada iteración se mezcla la lista de palabras para comenzar con una distinta.
 Finalizado el proceso obtendremos una matriz cuyos elementos son diccionarios con campos para indicar distintas propiedades como la letra, si es parte de la solución, de qué tipo es la palabra a la que pertenece, si pertenece a más de una palabra, etc.
 
 \section{Configuración}\label{config}
-En el modulo \texttt{config.py} se recopilan todos los datos necesarios para la confección del juego, y se guarda todo en un archivo \emph{json}. También en el se analizan las palabras propuestas por el usuario para ser parte del conjunto solución. Se buscan las palabras en Wiktionary en Pattern para obtener información sobre su definición y categoría, y se evalúan estos resultados, generando un reporte de error en caso de discrepancia. Los detalles de esta implementación se mencionan en las secciones \ref{wik} y \ref{patt}.
+En el módulo \texttt{config.py} se recopilan todos los datos necesarios para la confección del juego, y se guarda todo en un archivo \emph{json}. También en el se analizan las palabras propuestas por el usuario para ser parte del conjunto solución. Se buscan las palabras en Wiktionary en Pattern para obtener información sobre su definición y categoría, y se evalúan estos resultados, generando un reporte de error en caso de discrepancia. Los detalles de esta implementación se mencionan en las secciones \ref{wik} y \ref{patt}.
 
 También se establecen los colores de la interfaz en general a partir de información de temperatura y humedad obtenidos con la RaspberryPy (ver apéndice \ref{ap:rasp}).
 
@@ -123,6 +123,5 @@ Por último, hacemos mención de una serie de aspectos que se podrían mejorar, 
 \end{itemize}
 \item  Implementar una opción que permita salvar y cargar una partida.
 \item  Incremento de la cantidad máxima de palabras permitidas para buscar en la sopa.
-\item  Que el tamaño de los botones en que aparecen los botones de la sopa varíen su tamaño en función de la cantidad de palabras a encontrar (a mayor cantidad, menor tamaño).
 \item  Solucionar la portabilidad de la aplicación empaquetando los recursos necesarios en un ejecutable.
 \end{itemize}
