@@ -1,0 +1,7 @@
+\texttt{Pattern} es un paquete para \texttt{Python 2.4+} con funcionalidades para minería web (Google, Twitter, Wikipedia), procesamiento de lenguaje natural, aprendizaje automático y análisis de red. El código fuente~\autocite{clips} tiene licencia bajo BSD.
+
+Está organizado en módulos separados que se pueden encadenar juntos. Por ejemplo, el texto de Wikipedia (\texttt{pattern.web}) se puede analizar para etiquetado gramatical (\texttt{pattern.es}), consultado por sintaxis y semántica (\texttt{pattern.search}), y utilizado para entrenar a un clasificador (\texttt{pattern.vector}). En el trabajo utilizamos principalmente \texttt{pattern.web} y \texttt{pattern.es}.
+
+\subsection{\texttt{pattern.web}:}\label{pattern.web} Herramientas para la minería de datos web, utilizando un mecanismo de descarga que admite almacenamiento en caché, servidores proxy, solicitudes asíncronas y redirección. Una clase \texttt{SearchEngine} proporciona una API uniforme para múltiples servicios web: Google, Bing, Yahoo!, Twitter, Wikipedia, Flickr y fuentes de noticias utilizando \texttt{feedparser}~\autocite{feedparser}. El módulo incluye un analizador HTML basado en \texttt{BEAUTIFUL SOUP}~\autocite{bsoup}, un analizador PDF basado en \texttt{PDFMINER}~\autocite{pdfminer}, un rastreador web y una interfaz de correo web.
+
+\subsection{pattern.es}\label{pattern.es} Contiene un etiquetador gramatical (identifica sustantivos, adjetivos, verbos, etc. en una oración), herramientas para la conjugación de verbos, la singularización y pluralización de sustantivos en Español.
