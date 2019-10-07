@@ -2,14 +2,54 @@
 \usepackage{microtype}
 \usepackage{graphicx}
 %\usepackage[engilsh]{babel}
+\usepackage[spanish]{babel}
 \usepackage[utf8]{inputenc}
 \usepackage{csquotes}
 \usepackage[section]{placeins}
 \usepackage[backend=biber,style=ieee]{biblatex}
 \addbibresource{references.bib}
+% Code Hightlighting
+\usepackage[dvipsnames]{xcolor}
+\usepackage{minted}
+\usemintedstyle{tango}
+
+\definecolor{cverbbg}{gray}{0.93}
+
+\setminted[python]{bgcolor=cverbbg,breaklines=true}
+
+\usepackage{fancyvrb,newverbs}
+\usepackage{fvextra}
+\newenvironment{cverbatim}
+ {\SaveVerbatim{cverb}}
+ {\endSaveVerbatim
+  \flushleft\fboxrule=0pt\fboxsep=.5em
+  \colorbox{cverbbg}{\BUseVerbatim{cverb}}%
+  \endflushleft
+}
+
+\newcommand{\ctexttt}[1]{\colorbox{cverbbg}{\texttt{#1}}}
+\newverbcommand{\cverb}
+  {\setbox\verbbox\hbox\bgroup}
+  {\egroup\colorbox{cverbbg}{\box\verbbox}}
 
 \usepackage{cleveref}
-\usepackage{hyperref}
+\usepackage[colorlinks = true,
+            linkcolor = blue,
+            urlcolor  = blue,
+            citecolor = blue,
+            anchorcolor = blue]{hyperref}
+
+\usepackage{listings}
+
+%% imágenes
+\newcommand {\framedgraphic}[2] {
+    \begin{frame}{#1}
+        \begin{center}
+            \includegraphics[width=\textwidth,height=0.8\textheight,keepaspectratio]{#2}
+        \end{center}
+    \end{frame}
+}
+
 
 \pagestyle{headings}
 \frenchspacing 
@@ -31,8 +71,8 @@
 \input{front}
 
 \tableofcontents
-\listoffigures
-\listoftables
+%\listoffigures
+%\listoftables
 
 \cleardoublepage
 \pagenumbering{arabic}

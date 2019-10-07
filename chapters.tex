@@ -1,69 +1,128 @@
 \chapter{Introduction}
 
-State the problem and your motivations for exploring it. What is its theoretical and/or practical importance in wider context?
+Este trabajo se lleva a cabo en el marco de la asignatura Seminario de Lenguajes
+Como trabajo final para aplicar los conocimientos adquiridos durante la cursada, se implementa una aplicación didáctica orientada al desarrollo de capacidades de lecto-comprensión
+al mismo tiempo que permite un esparcimiento lúdico
 
-Guide to contents of the rest of the report.
+Lo que a continuación se presenta es la recopilación de las diferentes fases del proceso de desarrollo, indicando y explicando el lenguaje de programación y los módulos utilizados para tal fin.
 
-\section{Scope}
+Se incluye también un detalle de las problemáticas y obstáculos que se debieron superar, 
 
-State overall project goals. Clearly define the limits of your intended solution. 
+\chapter{Temas investigados}
 
-\section{Objectives}
+\section{Sobre PySimpleGUI}
+Es un paquete de GUI, (Interfaz Gráfica de Usuario) pensada para principiantes.
+Los paquetes GUI con más funcionalidad, como QT y WxPython, requieren configuración y tiempo para familiarizarse con las interfaces.
+Con PySImpleGUI se pueden crear GUI personalizadas de manera que se acopla facilmente a lo que se aprende en las primeras aproximaciones a Python. La disposición (\emph{layout}) de la GUI es una lista de filas. Cada fila es una lista de elementos. Cuando vuelve la llamada para mostrar el formulario, todos los campos de entrada en el formulario se devuelven como una tupla que se puede evaluar para llevar a cabo las distintas respuestas del sistema.
 
-Specify functional and/or architectural requirements of the solution. Do you have unique requirements in comparison to previous explorations of the problem? 
+Se basa en tkinter, por lo que no hay otras dependencias de paquetes.
 
+\section{Sobre Pattern}
+\input{pattern.tex}
+\section{Sobre el trabajo con sensores}
 
-\chapter{Background}
+Se usa la raspberry para medir temperatura y bla bla para detalles de como implementarlo detalladamente ver el~\autocite{anexoraspberry}
 
-Explain relevant concepts~\autocite{inbook} with appropriate citations. Either provide definitions for all technical jargon here or in a separate glossary.
+\chapter{Implementación}
 
-\section{Related work}
-
-Categorise existing approaches to the problem~\autocite{confwithpaper} in literature. Split into thematic subsections if necessary. Contrast previous studies with yours, instead of just quoting paper abstracts! 
-
-
-\chapter{Methodology}
-
-\section{System Decomposition}
-
-Decompose the system into components and describe each one.  Illustrate data and control flow interactions between components using suitable notation. Opt for standard notations whenever possible, and explain any non-standard notation used.
-
-
-\section{Design Rationale}
-
-What considerations drove system design choices? What are the trade-offs? Were alternative solutions considered?
+Como primer paso pensamos que para poder implementar la aplicación de la sopa de letras sería conveniente tener, en principio un módulo que genere y maneje cierta \emph{grilla} o \emph{matriz} con las letras correspondientes, otro módulo que muestre en pantalla dichos datos y otro que le sirva al usuario para configurar los primeros.
 
 
-\chapter{Implementation}
+\section{Grilla}\label{grilla}
+Para el primero que decidimos llamar \ctexttt{grilla.py} empezamos por leer distintas implementaciones de juegos similares. En Rosetta Code~\autocite{rosetta}, encontramos una solución para la \emph{busqueda de palabras}, que es parecido salvo porque en este caso las letras que sobran, es decir las que no pertenecen a ninguna palabra de las buscadas, deben formar un \emph{mensaje oculto}.
 
-Details of data structures and schemata, file, protocol and packet formats used in the implementation. Cite relevant standards~\autocite{standard} such as RFCs~\autocite{electronhowinfo}. 
+En resumen como se puede interpretar en el código~\autocite{anexogrilla} se recibe una lista de palabras, para cada una elige aleatoriamente una posición en la grilla, y una dirección (de un conjunto de \emph{versores} posibles) y comprueba si cabe de esa manera. Para ello, para cada letra prueba que no se salga de los bordes de la grilla, y que la celda este: libre u ocupada con la misma letra que se esta probando. De no ser así ira ``avanzando'' en la grilla hasta haber probado todos los casilleros de la misma como celda de comienzo para cada palabra. Este proceso lo limitamos con un número de iteraciones máximo para que no entre en un bucle infinito en el caso que se de una situación imposible de resolver. En cada iteración se mezcla la lista de palabras para comenzar con una distinta.
+Finalizado el proceso obtendremos una matriz cuyos elementos son diccionarios con campos para indicar distintas propiedades como la letra, si es parte de la solución, de qué tipo es la palabra a la que pertenece, si pertenece a más de una palabra, etc.
 
-Describe the use of third-party components and tools. Do not dwell on technology choices such as IDE, implementation language, and database.
+\section{Configuración}\label{config}
+En el modulo \texttt{config.py} se recopilan todos los datos necesarios para la confección del juego, y se guarda todo en un archivo \emph{json}. También en el se analizan las palabras propuestas por el usuario para ser parte del conjunto solución. Se buscan las palabras en Wiktionary en Pattern para obtener información sobre su definición y categoría, y se evalúan estos resultados, generando un reporte de error en caso de discrepancia. Los detalles de esta implementación se mencionan en las secciones \ref{wik} y \ref{patt}.
 
-Explain implementation challenges, optimisations attempted etc. Illustrate important work-flows in your system with screenshots.
+También se establecen los colores de la interfaz en general a partir de información de temperatura y humedad obtenidos con la RaspberryPy (ver apéndice \ref{ap:rasp}).
 
-\section{Verification and Test}
+Para asegurarse que se distingan los colores elegidos para resaltar las leras de cada tipo de palabras, usamos un modulo llamado \texttt{colormath} que asigna un valor numérico a los colores y calcula su cercanía.
 
-Describe behavioural specifications, contracts, assertions, unit and integration test suites for verifying correct operation of the system. 
+\section{Sopa}\label{sopa}
+Este módulo es el encargado de dibujar en pantalla la interfaz de usuario. Para ello recibe una configuración de un archivo (cuya generación se explica en la sección \ref{config}) dónde se le indicaran sus propiedades, como los colores que se deben usar, la fuente, las palabras de la solución, etc.
+
+A partir de la lista de palabras define el tamaño de la grilla, calculando el máximo entre el tamaño de la palabra más larga y la cantidad de palabras.
+
+Luego utilizando el módulo \texttt{PySimpleGui} representamos la grilla con una matriz de elementos \ctexttt{sg.Button}, que el usuario luego podrá presionar para marcar una letra. Para ello antes seleccionará un color dependiendo del tipo de palabra que busque.
+
+En cada iteración del bucle de eventos, se comprueba si se ha llegado a la solución. El módulo \ctexttt{Win\_Condition\( \)} comprueba celda por celda que estén marcadas correctamente, es decir si una celda no pertenece a una palabra, no debe estar marcada, si pertenece a una, debe estar marcada con el color correspondiente, y si pertenece a más de una puede estar marcada con cualquiera de los mismos. Además el usuario dispone de un botón para llamar a dicho módulo en cualquier momento, y se le indicará resaltando los errores cometidos.
+
+\section{Problemas encontrados}
+\subsection{Wiktionary}\label{wik}
+Para extraer la definición de Wiktionary nos topamos con el problema de que al ser una página comunitaria no siempre obedece el mismo patrón la confección el artículo de una palabra. 
+
+Se nos ocurrió entonces ver el código fuente de las paginas donde notamos que para enumerar las definiciones de una palabra se usan siempre \emph{HTML Description Lists}, aunque sea una sola. Por lo tanto decidimos que la mejor forma era buscar el el código fuente este ítem:
+\begin{minted}{python}
+from pattern.web import Wiktionary, plaintext
+engine = Wiktionary(language="es")
+sch=engine.search(palabra)
+if sch != None:
+	pos_1 = sch.source.find('<dt>1</dt>')
+	if pos_1 == -1:
+		pos_1 = sch.source.find('<dt>')
+		pos_cierre_1 = sch.source.find('</dt>',pos_1+1) #busca a partir de pos 1
+	else:
+		pos_cierre_1 = pos_1
+\end{minted}
+Como a veces el ítem solo contiene el número 1 y a veces lo acompaña una palabra, se salva ese caso buscando la apertura \ctexttt{<dt>} y el cierre \ctexttt{</dt>} por separado.
+Así se obtiene una posición, que se utilizara luego como comienzo para extraer el texto.
+
+De manera similar se obtiene la posición final, se puede buscar la apertura del siguiente ítem, y así nos quedaríamos siempre con la primer definición. Pero en caso que tenga una sola definición no se encontrará otra apertura, por lo tanto en el caso que devuelva negativa la búsqueda se puede buscar el siguiente punto.
+Luego con el módulo \ctexttt{plaintext} se traduce el código \texttt{html}
+\begin{minted}{python}
+definicion = plaintext(sch.source[pos_cierre_1: pos_2])[:pos_punto+1]
+if definicion[:1] == '1':
+	definicion = definicion[1:pos_punto+1]
+\end{minted}
+
+\subsection{Pattern}\label{patt}
+Con pattern el primer problema que encontramos fue que es incompatible con Python3.7, que era el que teníamos instalado, y por lo tanto decidimos trabajar con Python 3.6.
+
+A la hora de usar la función \ctexttt{tag} que sirve para etiquetar gramaticalmente las palabras de un \emph{string} notamos que los casos que sea una cadena sin significado se le asigna la etiqueta \ctexttt{'NN'}, que debería corresponder a un sustantivo.
+
+Se solucionó al darnos cuenta que el paquete contiene  extensas listas de palabras de donde obtiene la información, por lo tanto importándolas y buscando en ellas antes de aplicar la función de etiquetado obtuvimos buenos resultados. Se presenta esta investigación en exhaustivo detalle en el apéndice \ref{ap:patt}
 
 
-\chapter{Evaluation}
+\subsection{Deshabilitar ventana}
+Nos sucedió en diferentes ocasiones en las que surgía un \emph{pop up}, si se clickeaba otra ventana, se perdía el foco del primero y esto generaba errores, ya que el sistema podía quedar esperando cierto dato por ejemplo de un input.
+Para eso decidimos buscar un método para bloquear la interacción con las ventanas cuando fuera conveniente, pero lamentablemente el método proporcionado por PySimplegui para dicho fin, no nos funcionó. Por lo tanto decidimos redefinirlo de la siguiente manera:
 
-What system attributes are you evaluating? Why are they important? Precisely describe experiment set-up and measurement methodology.
+\begin{minted}{python}
+def disable(window):
+	window.TKroot.attributes('-disabled', 1)
+	window.SetAlpha(0.75)
 
-\section{Results and interpretation}
+def enable(window):
+	window.Reappear() ##igual que poner el alpha en 1
+	window.BringToFront()
+	window.TKroot.attributes('-disabled', 0)
+\end{minted}
+Lo que hace es acceder directamente a los atributos del elemento heredado de \texttt{tkinter} y modificarlo para que se deshabilite toda la ventana. Además hacemos que la ventana bloqueada se aclare para que llame la atención la que está habilitada.
+\section{Problema de combos duplicados}
+\input{combos.tex}
+\chapter{Conclusión}
 
-Present experimental data in tables and graphs. Label graph axes with appropriate units and scale them so they are legible in print.
+Como conclusión, queremos decir que a lo largo del trabajo hemos podido incorporar conocimientos, recursos y herramientas que consideramos de gran valor para nuestra formación y para el desarrollo de futuros proyectos. En primer lugar, por su misma extensión, el trabajo hizo necesaria una división de tareas en la que cada miembro del grupo tuvo que asumir un rol y trabajar para el conjunto. En este sentido, fue de gran utilidad el uso de la plataforma GitHub como herramienta de versionado de código.
 
-Compare results obtained with a baseline, such as the ideal case, or naive solution. Explain any deviations between outcome expected vs. trends in actual data. 
+Por otra parte, el uso de un lenguaje \emph{open source} nos dio la posibilidad de capitalizar el trabajo realizado por otros programadores, cuyos códigos se encuentran disponibles en la web, adaptándolo a nuestros requerimientos, y asimismo poner nuestro propio trabajo a disposición de cualquiera que lo desee, ya sea para usar la aplicación, o para servirse del código.
 
+Otro beneficio que obtuvimos del desarrollo de esta tarea, es haber aprendido a documentar debidamente un código, lo cual favorece y facilita su reutilización .
 
-\chapter{Conclusion}
-
-Present an honest appraisal of the success of your approach to the problem. What are its limitations? Highlighting challenges overcome in solving the problem and key results obtained. 
-
-Describe what you learnt in the course of the project.  
-
-\section{Future work}
-
-What improvements are possible with the benefit of hindsight? Propose potential extensions to your solution or alternative explorations of the problem.
+\section{Trabajo a futuro}
+Por último, hacemos mención de una serie de aspectos que se podrían mejorar, o bien implementar para una versión futura de la aplicación:
+\begin{itemize}
+\item Embellecimiento de la interfaz: 
+\begin{itemize} 
+	\item Gráficas más amigables ("splash art")
+	\item Tachado de las palabras encontradas durante el juego
+	\item Mejora de los botones de selección de color para cada tipo de palabra durante el juego
+	\item Incorporación de efectos sonoros.
+\end{itemize}
+\item  Implementar una opción que permita salvar y cargar una partida.
+\item  Incremento de la cantidad máxima de palabras permitidas para buscar en la sopa.
+\item  Que el tamaño de los botones en que aparecen los botones de la sopa varíen su tamaño en función de la cantidad de palabras a encontrar (a mayor cantidad, menor tamaño).
+\item  Solucionar la portabilidad de la aplicación empaquetando los recursos necesarios en un ejecutable.
+\end{itemize}

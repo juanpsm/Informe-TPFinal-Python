@@ -1,0 +1,29 @@
+
+Ya habiendo finalizado el desarrollo mas grueso de la aplicación, pasamos a una etapa de pruebas en donde nos percatamos de un error que se generaba en la ocasión especial que desde el menú se abriera la \emph{configuración} por segunda vez consecutiva, sin cerrar el programa principal.
+\begin{cverbatim}
+Traceback (most recent call last):
+  File "run.py", line 56, in <module>
+    config.main()
+        .
+        .
+        .
+        
+  File "C:\~\Python36\lib\site-packages\PPySimpleGUI\PySimpleGUI.py",
+line 5327, in PackFormIntoFrame
+    combostyle.element_create(unique_field, "from", "alt")
+  File "C:\~\Python36\lib\tkinter\ttk.py", line 468, in element_create
+    spec, *opts)
+_tkinter.TclError: Duplicate element _CANT_S_.TCombobox.field
+\end{cverbatim}
+
+Luego de una extensa investigación, resolvimos que el error se generaba por el modo que tiene PySimpleGUI de manejar los elementos \ctexttt{combobox}. En el código dónde define dichos elementos los llama   
+\begin{minted}{python}
+# Creates a unique name for each field element(Sure there is a better way to do this)
+unique_field = str(element.Key) + '.TCombobox.field'
+\end{minted}
+El problema es que este identificador no será único en el caso que se corra el código por segunda vez, sin antes \emph{destruirlos} para que al correr otra vez el código, se creen nuevamente sin haber problema de nombres duplicados.
+La primer idea fue buscar alguna manera de hacer esto último desde los métodos de ventana del mismo PySimpleGUI pero no se logró encontrar dicha funcionalidad. Por cuestión de tiempo se decidió modificar el codigo fuente de PySimpleGUI donde define este campo unico anexandole el tiempo actual usando el paquete \ctexttt{time}:
+\begin{minted}{python}
+unique_field = str(time.time()).replace('.', '') + str(element.Key) + '.TCombobox.field'
+\end{minted}
+Es una solución poco elegante, ya que se debe tener todo el código de PySimpleGUI en el directorio de ejecución, para que a la hora del \texttt{import}, se ``pise'' el paquete por la version modificada, pero fue la más solida que pudimos encontrar. 
